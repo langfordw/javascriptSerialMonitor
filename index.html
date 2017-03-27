@@ -1,0 +1,48 @@
+<!DOCTYPE>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <script type="text/javascript" src="dependencies/socket.io-1.3.5.js"></script>
+    <script type="text/javascript" src="dependencies/jquery-2.1.3.min.js"></script>
+    <script type="text/javascript" src="dependencies/smoothie.js"></script>
+
+    <script type="text/javascript" src="js/main.js"></script>
+    <script type="text/javascript" src="js/plotting.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!--CHARTS:-->
+    <!--http://smoothiecharts.org/-->
+
+</head>
+<body>
+
+<h2>Javascript Serial Monitor</h2>
+
+<div class="list">
+    Available Ports:  <a id="refreshPorts" href="#">refresh</a><br/>
+    <span id="availablePorts"></span>
+</div>
+
+<div class="list">
+    BaudRate:
+    <select id="baudSelect">
+    <option selected>115200</option>
+    <option>9600</option>
+    </select>
+</div>
+
+Status:&nbsp;<span id="statusMsg" class="warn"></span><br/>
+<br>
+
+<div class="scroll">
+	<input type="text" id="serialInput"></input><button id="sendButton">Send</button>
+	<input type="checkbox" id="newLineCheck">NL</input>&nbsp;<input type="checkbox" id="carriageReturnCheck">CR</input><br>
+	<input checked id="autoscroll" type="checkbox">autoscroll</input><br/>
+	<span id="serialMonitor" class="scroll"></span><br><br>
+</div>
+
+</body>
+</html>

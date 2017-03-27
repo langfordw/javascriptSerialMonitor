@@ -1,0 +1,51 @@
+body {
+	font-family:serif;
+}
+.scroll {
+	width:400px;
+	height:400px;
+	position: absolute;
+	resize:both;
+}
+
+.scroll>h3 {
+	margin:auto;
+}
+
+.scroll>span {
+	overflow-y:scroll;
+	display:inline-block;
+	position: relative;
+	width:100%;
+	height:100%;
+	border: 1px;
+	border-style:solid;
+	border-color: #999;
+	color: #555;
+}
+
+#sendButton {
+	width:20%;
+	position: relative;
+}
+
+#serialInput {
+	width:50%;
+	position: relative;
+}
+
+.success {
+	color: #309013;
+}
+
+.warn {
+	color: #db1919;
+}
+
+h2 {
+	font-family: Helvetica;
+}
+
+.list {
+	padding-bottom: 10px;
+}
