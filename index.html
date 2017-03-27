@@ -7,6 +7,9 @@
     <script type="text/javascript" src="dependencies/socket.io-1.3.5.js"></script>
     <script type="text/javascript" src="dependencies/jquery-2.1.3.min.js"></script>
     <script type="text/javascript" src="dependencies/smoothie.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <!-- // <script type="text/javascript" src="dependencies/d3.js"></script> -->
+    <!-- // <script type="text/javascript" src="dependencies/nv.d3.js"></script> -->
 
     <script type="text/javascript" src="js/main.js"></script>
     <script type="text/javascript" src="js/plotting.js"></script>
@@ -20,6 +23,8 @@
 <body>
 
 <h2>Javascript Serial Monitor</h2>
+
+<div style="display:inline-block;width:40%;position:relative;">
 
 <div class="list">
     Available Ports:  <a id="refreshPorts" href="#">refresh</a><br/>
@@ -40,8 +45,16 @@ Status:&nbsp;<span id="statusMsg" class="warn"></span><br/>
 <div class="scroll">
 	<input type="text" id="serialInput"></input><button id="sendButton">Send</button>
 	<input type="checkbox" id="newLineCheck">NL</input>&nbsp;<input type="checkbox" id="carriageReturnCheck">CR</input><br>
-	<input checked id="autoscroll" type="checkbox">autoscroll</input><br/>
-	<span id="serialMonitor" class="scroll"></span><br><br>
+	<input checked id="autoscroll" type="checkbox">autoscroll</input>&nbsp;<input checked type="checkbox" id="streamToPlot">stream to plot</input>
+    <br/>
+	<pre id="serialMonitor" class="scroll"></pre><br>
+    <button id="saveButton">Save Data</button><button id="clearButton">Clear Data</button>
+    <button id="plotButton">Plot Data</button>
+</div>
+
+</div>
+<div style="display:inline-block;width:60%;position:absolute;">
+    <div id="chart" style="width: 100%; height: 500px"></div>
 </div>
 
 </body>

@@ -24,6 +24,18 @@ body {
 	color: #555;
 }
 
+.scroll>pre {
+	overflow-y:scroll;
+	display:inline-block;
+	position: relative;
+	width:100%;
+	height:100%;
+	border: 1px;
+	border-style:solid;
+	border-color: #999;
+	color: #555;
+}
+
 #sendButton {
 	width:20%;
 	position: relative;
