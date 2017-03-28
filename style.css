@@ -67,7 +67,7 @@ h2 {
 	width:60%;
 	position:absolute;
 	left:40%;
-	top:15%;
+	top:5%;
 	margin-left:-30px;
 }
 
@@ -75,4 +75,8 @@ h2 {
 	display:inline-block;
 	width:40%;
 	position:absolute;
+}
+
+#parser {
+	margin-left:10%;
 }

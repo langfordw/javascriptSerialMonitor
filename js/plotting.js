@@ -30,13 +30,21 @@ function getCol(matrix, col){
 function drawChart(data) {
 
   // data: [[x1,y1],[x2,y2],...]
+  console.log(data)
 
-  var trace1 = {
-    x: getCol(data,0), 
-    y: getCol(data,1), 
-    type: 'lines',
-    showlegend: false
-  };
+  var traces = [];
+
+  for (var i = 1; i < data[0].length; i++) {
+    var trace = {
+      x: getCol(data,0), 
+      y: getCol(data,i), 
+      type: 'lines',
+      showlegend: false
+    };
+    traces.push(trace);
+  }
+
+  console.log(traces)
 
   var xAxisTemplate = {
     showgrid: true,
@@ -57,7 +65,7 @@ function drawChart(data) {
   }
 
   var layout = {xaxis: xAxisTemplate, yaxis: yAxisTemplate}
-  var traces = [trace1];
+  // var traces = [trace];
   var fig = {data: traces, layout: layout};
   Plotly.newPlot('chart', fig);
 }

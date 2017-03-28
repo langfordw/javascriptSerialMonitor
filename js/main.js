@@ -9,6 +9,8 @@ $(function() {
     var serialMonitor = $("#serialMonitor");
     var stringBuffer = new Array();
     var serialInput = $("#serialInput");
+    $("#commentCharacter").val('#');
+    $("#delimeterCharacter").val(',');
 
     serialInput.keydown(function(e) {
         if (e.keyCode == 13) {
@@ -41,20 +43,6 @@ $(function() {
         console.log("sending resume");
         socket.emit('dataOut','r');
     });
-
-    var saveData = (function () {
-        var a = document.createElement("a");
-        document.body.appendChild(a);
-        a.style = "display: none";
-        return function (data, fileName) {
-            var blob = new Blob([data], { type: 'text/csv;charset=utf-8;' }),
-            url = window.URL.createObjectURL(blob);
-            a.href = url;
-            a.download = fileName;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        };
-    }());
     
     $("#saveButton").click(function() {
         console.log("saving data...");
@@ -68,21 +56,9 @@ $(function() {
     });
 
     $("#plotButton").click(function() {
-        var clean_data = new Array();
-        clean_data.push(["Displacement","Load"])
         var data = serialMonitor.html().split('\n');
-        data = ["1, 2","3, 4","5, 6","7, 8","9, 10"];
-        console.log(data)
-        for (var i=0; i < data.length; i++) {
-            if (data[i][0] != '#') {
-                var xy = data[i].split(',').map(Number);
-                xy[0] *= 0.0001984375;
-                clean_data.push(xy);
-            }
-        }
-        clean_data.pop();
-        console.log(clean_data);
-        drawChart(clean_data);
+        data = ["1, 2, 3","3, 4, 5","5, 6, 7","7, 8, 9","9, 10, 11"];
+        drawChart(parseData(data));
     });
 
     $("#sendButton").click(function() {
@@ -151,29 +127,41 @@ $(function() {
     });
 
     socket.on("dataIn", function(data){//oncoming serial data
-        // console.log(data);
-        // stringBuffer.push(data);
-        // stringBuffer.push("<br/>");
         serialMonitor.html(serialMonitor.html()+data + '\n');
         console.log(serialMonitor.html())
         if ($("#autoscroll").is(':checked')) {
             serialMonitor[0].scrollTop = serialMonitor[0].scrollHeight;
         }
         if ($("#streamToPlot").is(':checked')) {
-            var clean_data = new Array();
-            clean_data.push(["Displacement","Load"])
             var data = serialMonitor.html().split('\n');
-            for (var i=0; i < data.length; i++) {
-                if (data[i][0] != '#') {
-                    var xy = data[i].split(',').map(Number);
-                    xy[0] *= 0.0001984375;
-                    clean_data.push(xy);
-                }
-            }
-            clean_data.pop();
-            console.log(clean_data);
-            drawChart(clean_data);
+            drawChart(parseData(data));
         }
     });
+
+    function parseData(data) {
+        var clean_data = [];
+        for (var i=0; i < data.length; i++) {
+            if (data[i][0] != $("#commentCharacter").val()) {
+                var xy = data[i].split($("#delimeterCharacter").val()).map(Number);
+                xy[0] *= 0.0001984375;
+                clean_data.push(xy);
+            }
+        }
+        return clean_data;
+    }
+
+    var saveData = (function () {
+        var a = document.createElement("a");
+        document.body.appendChild(a);
+        a.style = "display: none";
+        return function (data, fileName) {
+            var blob = new Blob([data], { type: 'text/csv;charset=utf-8;' }),
+            url = window.URL.createObjectURL(blob);
+            a.href = url;
+            a.download = fileName;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        };
+    }());
 
 });
