@@ -3,7 +3,6 @@
  */
 
 
-
 $(function() {
 
     var socket = io.connect('http://localhost:8080');
@@ -72,6 +71,8 @@ $(function() {
         var clean_data = new Array();
         clean_data.push(["Displacement","Load"])
         var data = serialMonitor.html().split('\n');
+        data = ["1, 2","3, 4","5, 6","7, 8","9, 10"];
+        console.log(data)
         for (var i=0; i < data.length; i++) {
             if (data[i][0] != '#') {
                 var xy = data[i].split(',').map(Number);

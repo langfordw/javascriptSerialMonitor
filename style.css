@@ -61,3 +61,18 @@ h2 {
 .list {
 	padding-bottom: 10px;
 }
+
+.chart {
+	display:inline-block;
+	width:60%;
+	position:absolute;
+	left:40%;
+	top:15%;
+	margin-left:-30px;
+}
+
+.container {
+	display:inline-block;
+	width:40%;
+	position:absolute;
+}
