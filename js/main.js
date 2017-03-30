@@ -1,7 +1,7 @@
 /**
  * Created by ghassaei on 10/26/16.
  */
-
+var clean_data = [];
 
 $(function() {
 
@@ -9,6 +9,7 @@ $(function() {
     var serialMonitor = $("#serialMonitor");
     var stringBuffer = new Array();
     var serialInput = $("#serialInput");
+    
     $("#commentCharacter").val('#');
     $("#delimeterCharacter").val(',');
 
@@ -47,17 +48,24 @@ $(function() {
     $("#saveButton").click(function() {
         console.log("saving data...");
         console.log(serialMonitor.html())
-        var fileName = "jsm_data.json";
-        saveData2(serialMonitor.html(),fileName);
+        var fileName = "jsm_data.txt";
+        saveData(serialMonitor.html(),fileName);
     });
 
     $("#clearButton").click(function() {
         serialMonitor.html("");
+        clean_data = [];
+        chart_initialized = false;
+        Plotly.purge('chart');
     });
 
     $("#plotButton").click(function() {
         var data = serialMonitor.html().split('\n');
-        data = ["1, 2, 3","3, 4, 5","5, 6, 7","7, 8, 9","9, 10, 11"];
+        if (data.length < 2) {
+            // if there's nothing in the serial monitor, use some sample data
+            console.log("using sample data")
+            data = ["1, 2, 3","3, 4, 5","5, 6, 7","7, 8, 9","9, 10, 11"];
+        }
         drawChart(parseData(data));
     });
 
@@ -128,24 +136,35 @@ $(function() {
 
     socket.on("dataIn", function(data){//oncoming serial data
         serialMonitor.html(serialMonitor.html()+data + '\n');
-        console.log(serialMonitor.html())
+        // console.log(serialMonitor.html())
         if ($("#autoscroll").is(':checked')) {
             serialMonitor[0].scrollTop = serialMonitor[0].scrollHeight;
         }
         if ($("#streamToPlot").is(':checked')) {
-            var data = serialMonitor.html().split('\n');
-            drawChart(parseData(data));
+            // var data = serialMonitor.html().split('\n');
+            // drawChart(parseData(data));
+            var dat = parseLine(data);
+            if (dat != -1) {
+                addDataToChart(dat);
+            }
         }
     });
 
+    function parseLine(line) {
+        if (line[0] != $("#commentCharacter").val()) {
+            var xy = line.split($("#delimeterCharacter").val()).map(Number);
+            xy[0] *= 0.0001984375;
+            clean_data.push(xy);
+            return xy;
+        } else {
+            return -1;
+        }
+
+    }
+
     function parseData(data) {
-        var clean_data = [];
         for (var i=0; i < data.length; i++) {
-            if (data[i][0] != $("#commentCharacter").val()) {
-                var xy = data[i].split($("#delimeterCharacter").val()).map(Number);
-                xy[0] *= 0.0001984375;
-                clean_data.push(xy);
-            }
+            parseLine(data[i]);
         }
         return clean_data;
     }

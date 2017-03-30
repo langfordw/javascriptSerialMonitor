@@ -18,6 +18,8 @@
 //   chart.draw(data, google.charts.Line.convertOptions(options));
 // }
 
+var chart_initialized = false;
+
 function getCol(matrix, col){
    var column = [];
    for(var i=0; i<matrix.length; i++){
@@ -26,12 +28,30 @@ function getCol(matrix, col){
    return column;
 }
 
+function addDataToChart(data) {
+  
+  if (!chart_initialized) {
+    drawChart(clean_data);
+    chart_initialized = true;
+  } else {
+    console.log(data)
+    var xdata = data[0]
+    var ydata = [];
+    var indices = [];
+    for (var i=1; i < data.length; i++) {
+      ydata.push(data[i]);
+      indices.push(i-1);
+    }
+    Plotly.extendTraces('chart', {x: [[xdata]], y: [ydata]}, indices);
+  }
+  
+}
+
 
 function drawChart(data) {
 
   // data: [[x1,y1],[x2,y2],...]
-  console.log(data)
-
+  // console.log(data)
   var traces = [];
 
   for (var i = 1; i < data[0].length; i++) {
