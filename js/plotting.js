@@ -71,7 +71,7 @@ function drawChart(data) {
     zeroline: true,
     nticks: 20,
     showline: false,
-    title: 'Displacement',
+    title: 'Displacement (mm)',
     mirror: 'all'
   }
 
@@ -80,7 +80,7 @@ function drawChart(data) {
     zeroline: true,
     nticks: 20,
     showline: false,
-    title: 'Load',
+    title: 'Load (mN)',
     mirror: 'all'
   }
 

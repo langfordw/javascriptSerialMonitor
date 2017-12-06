@@ -98,7 +98,7 @@ io.on('connection', function(socket){
         console.log("initing port " + _portName + " at " + _baudRate);
         var port = new SerialPort(_portName, {
             baudRate: _baudRate,
-            parser: SerialPort.parsers.readline("\n"),
+            parser: new SerialPort.parsers.Readline("\n"),
             autoOpen: false
         //       parser: SerialPort.parsers.raw
         });
@@ -127,7 +127,7 @@ io.on('connection', function(socket){
             var oldBaud = baudRate;
             var oldName = portName;
             console.log("disconnecting port " + oldName + " at " + oldBaud);
-            if (currentPort.isOpen()) currentPort.close(function(error){
+            if (currentPort.isOpen) currentPort.close(function(error){
                 if (error) {
                     onPortError(error);
                     return null;

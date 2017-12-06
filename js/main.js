@@ -153,7 +153,8 @@ $(function() {
     function parseLine(line) {
         if (line[0] != $("#commentCharacter").val()) {
             var xy = line.split($("#delimeterCharacter").val()).map(Number);
-            xy[0] *= 0.0001984375;
+            xy[0] *= 0.0001984375; //steps --> mm
+            xy[1] *= 9.81; //g --> mN
             clean_data.push(xy);
             return xy;
         } else {
