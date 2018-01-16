@@ -1,8 +1,11 @@
 /**
  * Created by aghassaei on 6/17/15.
  */
+var cobs = require('cobs');
 
-var SerialPort = require('SerialPort-v4');
+var SerialPort = require('serialport');
+
+
 
 var app = require('http').createServer();
 var io = require('socket.io')(app);
@@ -13,7 +16,72 @@ var portName = null;
 var currentPort = null;
 var baudRate = 115200;
 
-initPort('/dev/tty.usbserial-FTH9KZ31',baudRate);
+var count = 0;
+
+// function initPort(_portName, _baudRate){
+
+//     const Delimiter = SerialPort.parsers.Delimiter;
+
+//     console.log("initing port " + _portName + " at " + _baudRate);
+//     var port = new SerialPort(_portName, {
+//         baudRate: _baudRate,
+//         //parser: SerialPort.parsers.Delimiter({ delimiter: Buffer.from([0])}),
+//         autoOpen: false
+//     });
+
+//     var parser = port.pipe(new Delimiter({ delimiter: Buffer.from([0])}))
+
+//     port.open(function(error){
+//         if (error) {
+//             onPortError(error);
+//             currentPort = null;
+//             return;
+//         }
+//         onPortOpen(_portName, _baudRate);
+//         parser.on('data', onPortData);
+//         port.on('close', onPortClose);
+//         port.on('error', onPortError);
+//     });
+//     return port;
+// }
+
+// function onPortOpen(name, baud){
+//     console.log("connected to port " + portName + " at " + baudRate);
+//     // io.emit("portConnected", {baudRate:baud, portName:name});
+// }
+
+// function onPortData(data){
+//     // console.log(data);
+//     // console.log(Buffer(data,'hex'))
+//     console.log(cobs.decode(Buffer(data,'base64')).readUInt16BE())
+//     // var buf = ;
+//     // console.log(buf);
+//     //console.log(cobs.finish(Buffer.from(data,'hex')))
+//     // arr.from(data);
+//     // console.log(arr.toString('ascii'));
+//     // io.emit('dataIn', data);
+// }
+
+// function onPortClose(){
+// //        console.log("port closed");
+// }
+
+// function onPortError(error){
+//     console.log("Serial port error " + error);
+//     // io.emit("errorMsg", {error:String(error)});
+// }
+
+// initPort('/dev/tty.usbserial-FTH9KZ31',baudRate);
+
+// const SerialPort = require('serialport');
+// // const Delimiter = SerialPort.parsers.Delimiter;
+// const port = new SerialPort('/dev/tty.usbserial-FTH9KZ31', {baudRate: 115200});
+// const parser = port.pipe(new SerialPort.parsers.Delimiter({ delimiter: Buffer.from([0])}))
+// // const parser = port.pipe();
+// // const parser = port.pipe(new Delimiter({ delimiter: Buffer.from('0x00') }));
+// console.log(Buffer.from([0]));
+// parser.on('data', onPortData);
+
 
 io.on('connection', function(socket){
     console.log("connection!")
@@ -49,9 +117,10 @@ io.on('connection', function(socket){
         io.emit('dataSent', data);
         data += '\n';
         console.log("Sending data: " + data);
-        currentPort.write(new Buffer(data), function(err, res) {
-            if (err) onPortError(err);
-        });
+        // currentPort.write(new Buffer(data), function(err, res) {
+        //     if (err) onPortError(err);
+        // });
+        curerntPort.write(new Buffer(data));
 //        currentPort.write(new Buffer([parseInt(data)]));//write byte
     }
 
@@ -99,10 +168,11 @@ io.on('connection', function(socket){
         console.log("initing port " + _portName + " at " + _baudRate);
         var port = new SerialPort(_portName, {
             baudRate: _baudRate,
-            parser: new SerialPort.parsers.readline("\n"),
+            parser: new SerialPort.parsers.Delimiter({ delimiter: Buffer.from([0])}),
             autoOpen: false
-        //       parser: SerialPort.parsers.raw
         });
+
+        console.log("opening port...")
 
         port.open(function(error){
             if (error) {
@@ -115,6 +185,8 @@ io.on('connection', function(socket){
             port.on('close', onPortClose);
             port.on('error', onPortError);
         });
+
+        console.log(port)
         return port;
     }
 
@@ -128,13 +200,13 @@ io.on('connection', function(socket){
             var oldBaud = baudRate;
             var oldName = portName;
             console.log("disconnecting port " + oldName + " at " + oldBaud);
-            if (currentPort.isOpen()) currentPort.close(function(error){
-                if (error) {
-                    onPortError(error);
-                    return null;
-                }
-                io.emit("portDisconnected", {baudRate:oldBaud, portName:oldName});
-            });
+            // if (currentPort.isOpen()) currentPort.close(function(error){
+            //     if (error) {
+            //         onPortError(error);
+            //         return null;
+            //     }
+            // io.emit("portDisconnected", {baudRate:oldBaud, portName:oldName});
+            // });
         }
         return initPort(_portName, _baudRate);
     }
@@ -145,9 +217,10 @@ io.on('connection', function(socket){
     }
 
     function onPortData(data){
-        arr.from(data);
-        console.log(arr.toString('ascii'));
-        io.emit('dataIn', data);
+        var data_out = cobs.decode(Buffer(data,'base64')).readUInt16BE();
+        console.log(data_out);
+        count++;
+        io.emit('dataIn', [count, data_out]);
     }
 
     function onPortClose(){
@@ -160,7 +233,6 @@ io.on('connection', function(socket){
     }
 
 });
-
 
 
 

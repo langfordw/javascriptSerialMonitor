@@ -1,7 +1,3 @@
-/**
- * Created by aghassaei on 6/17/15.
- */
-
 var SerialPort = require('SerialPort-v4');
 
 var app = require('http').createServer();
@@ -13,14 +9,11 @@ var portName = null;
 var currentPort = null;
 var baudRate = 115200;
 
-initPort('/dev/tty.usbserial-FTH9KZ31',baudRate);
-
 io.on('connection', function(socket){
-    console.log("connection!")
-    var allPorts = [];
+	// console.log("hello")
+	var allPorts = [];
     refreshAvailablePorts(function(_allPorts, _portName, _baudRate){
-        currentPort = changePort(_portName, _baudRate);
-        // console.log("changePort")
+        // currentPort = changePort(_portName, _baudRate);
     });
 
     socket.on('baudRate', function(value){
@@ -28,7 +21,6 @@ io.on('connection', function(socket){
         refreshAvailablePorts(function(){
             if (!checkThatPortExists(portName)) return;
             currentPort = changePort(portName, value);
-            // console.log("changePort");
             baudRate = value;
         });
     });
@@ -55,30 +47,12 @@ io.on('connection', function(socket){
 //        currentPort.write(new Buffer([parseInt(data)]));//write byte
     }
 
-    socket.on('flush', function(){
-        if (currentPort) currentPort.flush(function(){
-            console.log("port " + portName + " flushed");
-        });
-    });
-
-    socket.on('refreshPorts', function(){
-        console.log("refreshing ports list");
-        allPorts = refreshAvailablePorts();
-    });
-
-    function checkThatPortExists(_portName){
-        if (allPorts.indexOf(_portName) < 0) {
-            onPortError("no available port called " + _portName);
-            return false;
-        }
-        return true;
-    }
-
     function refreshAvailablePorts(callback){
         var _allPorts = [];
         SerialPort.list(function(err, ports){
             ports.forEach(function(port) {
                 _allPorts.push(port.comName);
+                console.log(port.comName)
             });
 
             allPorts = _allPorts;
@@ -99,7 +73,7 @@ io.on('connection', function(socket){
         console.log("initing port " + _portName + " at " + _baudRate);
         var port = new SerialPort(_portName, {
             baudRate: _baudRate,
-            parser: new SerialPort.parsers.readline("\n"),
+            parser: new SerialPort.parsers.Readline("\n"),
             autoOpen: false
         //       parser: SerialPort.parsers.raw
         });
@@ -107,6 +81,7 @@ io.on('connection', function(socket){
         port.open(function(error){
             if (error) {
                 onPortError(error);
+                onPortClose();
                 currentPort = null;
                 return;
             }
@@ -128,7 +103,7 @@ io.on('connection', function(socket){
             var oldBaud = baudRate;
             var oldName = portName;
             console.log("disconnecting port " + oldName + " at " + oldBaud);
-            if (currentPort.isOpen()) currentPort.close(function(error){
+            if (currentPort.isOpen) currentPort.close(function(error){
                 if (error) {
                     onPortError(error);
                     return null;
@@ -144,25 +119,47 @@ io.on('connection', function(socket){
         io.emit("portConnected", {baudRate:baud, portName:name});
     }
 
-    function onPortData(data){
-        arr.from(data);
-        console.log(arr.toString('ascii'));
-        io.emit('dataIn', data);
-    }
-
     function onPortClose(){
-//        console.log("port closed");
+       console.log("port closed");
     }
 
     function onPortError(error){
         console.log("Serial port error " + error);
         io.emit("errorMsg", {error:String(error)});
     }
-
 });
 
+// // Use a Readline parser
+// var SerialPort = require('serialport');
+// var parsers = SerialPort.parsers;
 
+// // Use a `\n` as a line terminator
+// var parser = new parsers.Readline({
+//   delimiter: '\n'
+// });
 
+// var port = new SerialPort('/dev/tty.usbmodem1421', {
+//   baudRate: baudRate
+// });
 
+// port.pipe(parser);
 
+// port.on('open', () => console.log('Port open'));
 
+// parser.on('data', function(data) {
+// 	outputData(data);
+// });
+
+// port.write('ROBOT PLEASE RESPOND\n');
+
+// // The parser will emit any string response
+
+// function outputData(data){
+//     io.emit('dataSent', data);
+//     data += '\n';
+//     console.log("Sending data: " + data);
+//     currentPort.write(new Buffer(data), function(err, res) {
+//         if (err) onPortError(err);
+//     });
+// //        currentPort.write(new Buffer([parseInt(data)]));//write byte
+// }
